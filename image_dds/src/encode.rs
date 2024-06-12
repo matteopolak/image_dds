@@ -11,6 +11,21 @@ use crate::{
 };
 use crate::{Pixel, SurfaceRgba32Float};
 
+impl<T: AsRef<[u8]>> Surface<T> {
+    /// Encode a surface to the given `format`.
+    ///
+    /// The number of mipmaps generated depends on the `mipmaps` parameter.
+    pub fn encode(
+        &self,
+        format: ImageFormat,
+        quality: Quality,
+        mipmaps: Mipmaps,
+    ) -> Result<Surface<Vec<u8>>, SurfaceError> {
+        self.validate()?;
+        encode_surface(self, format, quality, mipmaps)
+    }
+}
+
 impl<T: AsRef<[u8]>> SurfaceRgba8<T> {
     /// Encode an RGBA8 surface to the given `format`.
     ///
@@ -187,6 +202,36 @@ trait GetMipmap<P> {
     fn layers(&self) -> u32;
     fn mipmaps(&self) -> u32;
     fn get(&self, layer: u32, depth_level: u32, mipmap: u32) -> Option<&[P]>;
+}
+
+
+impl<T> GetMipmap<u8> for Surface<T>
+where
+    T: AsRef<[u8]>,
+{
+    fn width(&self) -> u32 {
+        self.width
+    }
+
+    fn height(&self) -> u32 {
+        self.height
+    }
+
+    fn depth(&self) -> u32 {
+        self.depth
+    }
+
+    fn layers(&self) -> u32 {
+        self.layers
+    }
+
+    fn mipmaps(&self) -> u32 {
+        self.mipmaps
+    }
+
+    fn get(&self, layer: u32, depth_level: u32, mipmap: u32) -> Option<&[u8]> {
+        self.get(layer, depth_level, mipmap)
+    }
 }
 
 impl<T> GetMipmap<u8> for SurfaceRgba8<T>
