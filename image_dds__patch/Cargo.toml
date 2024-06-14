@@ -1,5 +1,5 @@
 [package]
-name = "image_dds"
+name = "image_dds__patch"
 version = "0.5.1"
 authors = ["ScanMountGoat <>"]
 description = "Convert images to and from compressed DDS formats"
